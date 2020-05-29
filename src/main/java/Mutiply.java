@@ -4,11 +4,11 @@ import java.time.Instant;
 import java.util.Scanner;
 import java.util.Random;
 
-class Maal implements AutoCloseable {
+class Multiply implements AutoCloseable {
 	public static void main(String[] args) throws Exception
 	{
-		try (Maal maal = new Maal();) {
-			maal.run();
+		try (Multiply multiply = new Multiply();) {
+			multiply.run();
 		}
 	}
 
@@ -59,7 +59,7 @@ class Maal implements AutoCloseable {
 		boolean withIntermediateTime = answer == 'j';
 		screen.append(answer).print();
 
-		Instant maalStart = Instant.now();
+		Instant multiplyStart = Instant.now();
 
 		for (; answerCount < wantedExercises; answerCount++) {
 			Exercise currentExercise = new Exercise();
@@ -76,7 +76,7 @@ class Maal implements AutoCloseable {
 			}
 		}
 
-		screen.appendNewLine().append("totaal: ").append(goodAnswers).append("/").append(wantedExercises).append(" in ").append(Duration.between(maalStart, Instant.now()).getSeconds()).append(" seconden").print();
+		screen.appendNewLine().append("totaal: ").append(goodAnswers).append("/").append(wantedExercises).append(" in ").append(Duration.between(multiplyStart, Instant.now()).getSeconds()).append(" seconden").print();
 	}
 
 	public void close() throws Exception{
