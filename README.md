@@ -6,4 +6,4 @@ Build: gradle assemble
 Execute:  java -jar build/libs/multiplicationtable.jar  
     This will execute the exercices with the default nl/BE language.  
 Execute in a different language: java -jar build/libs/multiplicationtable.jar [language] [country]  
-    example from english: java -jar build/libs/multiplicationtable.jar en GB
+    example for english: java -jar build/libs/multiplicationtable.jar en GB
