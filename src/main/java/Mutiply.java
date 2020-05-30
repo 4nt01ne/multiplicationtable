@@ -7,19 +7,18 @@ import java.util.Scanner;
 
 class Multiply implements AutoCloseable {
   public static void main(String[] args) throws Exception {
-    try (Multiply multiply = new Multiply();) {
-      if (args.length == 2) {
-        multiply.currentLocale = new Locale(String.valueOf(args[0]), String.valueOf(args[1]));
-        multiply.messages = ResourceBundle.getBundle("Messages", multiply.currentLocale);
-      }
+    try (Multiply multiply = new Multiply(args);) {
       multiply.run();
     }
   }
 
+  private static Transalor translator;
   private Scanner scanner = new Scanner(System.in);
-  private Locale currentLocale = new Locale("nl", "BE");
-  private ResourceBundle messages = ResourceBundle.getBundle("Messages", currentLocale);
-
+  
+  public Multiply(String[] args) {
+     translator = new Transalor(args);
+  }
+  
   public int readNextInt() {
     while (scanner.hasNext()) {
       if (scanner.hasNextInt()) {
@@ -54,15 +53,15 @@ class Multiply implements AutoCloseable {
   public void run() {
     int goodAnswers = 0;
     int answerCount = 0;
-    Screen screen = new Screen(messages.getString("how.much.exercises") + " ");
+    Screen screen = new Screen(translator.say("how.much.exercises") + " ");
 
     screen.presentInitialInput();
     int wantedExercises = readNextInt();
     screen.append(wantedExercises).appendNewLine().print();
 
-    screen.append(messages.getString("with.intermediate.time")).append(" ").printNoCarriageReturn();
+    screen.append(translator.say("with.intermediate.time")).append(" ").printNoCarriageReturn();
     char answer = readNextChar();
-    boolean withIntermediateTime = answer == messages.getString("answer.yes").charAt(0);
+    boolean withIntermediateTime = answer == translator.say("answer.yes").charAt(0);
     screen.append(answer).print();
 
     Instant multiplyStart = Instant.now();
@@ -78,18 +77,18 @@ class Multiply implements AutoCloseable {
         goodAnswers++;
       if (withIntermediateTime) {
         screen.append(" ").append(currentExercise.computeOutcome()).append(" ")
-            .append(messages.getString("in.seconds.in")).append(" ")
+            .append(translator.say("in.seconds.in")).append(" ")
             .append(Duration.between(exerciseStart, Instant.now()).getSeconds()).append(" ")
-            .append(messages.getString("in.seconds.seconds")).print();
+            .append(translator.say("in.seconds.seconds")).print();
       } else {
         screen.append(" ").append(currentExercise.computeOutcome()).print();
       }
     }
 
-    screen.appendNewLine().append(messages.getString("total")).append(": ").append(goodAnswers)
-        .append("/").append(wantedExercises).append(" ").append(messages.getString("in.seconds.in"))
+    screen.appendNewLine().append(translator.say("total")).append(": ").append(goodAnswers)
+        .append("/").append(wantedExercises).append(" ").append(translator.say("in.seconds.in"))
         .append(" ").append(Duration.between(multiplyStart, Instant.now()).getSeconds()).append(" ")
-        .append(messages.getString("in.seconds.seconds")).print();
+        .append(translator.say("in.seconds.seconds")).print();
   }
 
   public void close() throws Exception {
@@ -131,8 +130,7 @@ class Multiply implements AutoCloseable {
   private static class Screen {
     private String screen;
     private String initialInput;
-    private final String os = System.getProperty("os.name");
-
+    
     public Screen(String initialInput) {
       this.screen = initialInput;
       this.initialInput = initialInput;
@@ -178,6 +176,22 @@ class Multiply implements AutoCloseable {
 
     private void resetInitialInput() {
       this.screen = this.initialInput;
+    }
+  }
+  
+  private static class Transalor {
+    private Locale currentLocale = new Locale("nl", "BE");
+    private ResourceBundle messages = ResourceBundle.getBundle("Messages", currentLocale);
+
+    public Transalor(String[] args) {
+      if (args.length == 2) {
+        currentLocale = new Locale(String.valueOf(args[0]), String.valueOf(args[1]));
+        messages = ResourceBundle.getBundle("Messages", currentLocale);
+      }
+    }
+    
+    public String say(String property) {
+      return messages.getString(property);
     }
   }
 }
