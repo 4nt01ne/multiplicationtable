@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -14,11 +15,11 @@ class Multiply implements AutoCloseable {
 
   private static Transalor translator;
   private Scanner scanner = new Scanner(System.in);
-  
+
   public Multiply(String[] args) {
-     translator = new Transalor(args);
+    translator = new Transalor(args);
   }
-  
+
   public int readNextInt() {
     while (scanner.hasNext()) {
       if (scanner.hasNextInt()) {
@@ -77,18 +78,18 @@ class Multiply implements AutoCloseable {
         goodAnswers++;
       if (withIntermediateTime) {
         screen.append(" ").append(currentExercise.computeOutcome()).append(" ")
-            .append(translator.say("in.seconds.in")).append(" ")
-            .append(Duration.between(exerciseStart, Instant.now()).getSeconds()).append(" ")
-            .append(translator.say("in.seconds.seconds")).print();
+        .append(translator.say("in.seconds.in")).append(" ")
+        .append(Duration.between(exerciseStart, Instant.now()).getSeconds()).append(" ")
+        .append(translator.say("in.seconds.seconds")).print();
       } else {
         screen.append(" ").append(currentExercise.computeOutcome()).print();
       }
     }
 
-    screen.appendNewLine().append(translator.say("total")).append(": ").append(goodAnswers)
-        .append("/").append(wantedExercises).append(" ").append(translator.say("in.seconds.in"))
-        .append(" ").append(Duration.between(multiplyStart, Instant.now()).getSeconds()).append(" ")
-        .append(translator.say("in.seconds.seconds")).print();
+    screen.appendNewLine().appendNewLine().append(translator.say("total")).append(": ").append(goodAnswers)
+    .append("/").append(wantedExercises).append(" ").append(translator.say("in.seconds.in"))
+    .append(" ").append(Duration.between(multiplyStart, Instant.now()).getSeconds()).append(" ")
+    .append(translator.say("in.seconds.seconds")).print();
   }
 
   public void close() throws Exception {
@@ -130,7 +131,7 @@ class Multiply implements AutoCloseable {
   private static class Screen {
     private String screen;
     private String initialInput;
-    
+
     public Screen(String initialInput) {
       this.screen = initialInput;
       this.initialInput = initialInput;
@@ -147,8 +148,18 @@ class Multiply implements AutoCloseable {
     }
 
     public Screen cls() {
-      System.out.print("\033[H\033[2J");
-      System.out.flush();
+      ProcessBuilder pb = new ProcessBuilder();
+      if(pb.environment().containsKey("PS1")) {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+      } else {
+        try {
+          new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();
+        } catch (IOException | InterruptedException e) {
+          System.out.print("\033[H\033[2J");
+          System.out.flush();
+        }
+      }
       return this;
     }
 
@@ -178,7 +189,7 @@ class Multiply implements AutoCloseable {
       this.screen = this.initialInput;
     }
   }
-  
+
   private static class Transalor {
     private Locale currentLocale = new Locale("nl", "BE");
     private ResourceBundle messages = ResourceBundle.getBundle("Messages", currentLocale);
@@ -189,7 +200,7 @@ class Multiply implements AutoCloseable {
         messages = ResourceBundle.getBundle("Messages", currentLocale);
       }
     }
-    
+
     public String say(String property) {
       return messages.getString(property);
     }
