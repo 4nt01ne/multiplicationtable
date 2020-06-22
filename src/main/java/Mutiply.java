@@ -109,7 +109,7 @@ class Multiply implements AutoCloseable {
     private int count;
     private int remaining;
     private int result;
-    private Instant start = Instant.now();
+    private Instant start;
     private Exercise current;
     private List<String> performed = new ArrayList<String>(maxCombinations);
 
@@ -136,6 +136,9 @@ class Multiply implements AutoCloseable {
     @Override
     public Exercise next() {
       try {
+        if(start == null) {
+	  start = Instant.now();
+	}
         handleResult();
         current = new Exercise(randomIterator.nextInt(), randomIterator.nextInt());
         while (performed.contains(current.anInt + "x" + current.anOtherInt)
