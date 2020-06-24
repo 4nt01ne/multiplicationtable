@@ -11,7 +11,9 @@ import java.util.Random;
 public class Exercises implements Iterator<Exercise> {
   private static final int min = 2;
   private static final int max = 10;
-  private static final int maxCombinations = ((max - min + 1) * (max - min + 1)) / 2;
+  //cast to float to keep comma precision
+  //credits: https://math.stackexchange.com/a/3403598
+  private static final int maxCombinations =(int)(((float)max - min + 1) * (max - min + 1 + 1))/2;
 
   private PrimitiveIterator.OfInt randomIterator = new Random().ints(min, max + 1).iterator();
   private int count;
@@ -27,7 +29,7 @@ public class Exercises implements Iterator<Exercise> {
 
   @Override
   public boolean hasNext() {
-    return remaining > 0 || performed.size() >= maxCombinations;
+    return remaining > 0 && performed.size() < maxCombinations;
   }
 
   @Override
@@ -66,8 +68,12 @@ public class Exercises implements Iterator<Exercise> {
   }
 
   public void setCount(int wanted) {
-    this.count = wanted;
+    this.count = wanted <= maxCombinations ? wanted : maxCombinations;
     this.remaining = this.count;
     this.result = this.count;
+  }
+  
+  public int getCount() {
+    return count;
   }
 }

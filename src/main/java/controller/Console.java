@@ -38,6 +38,10 @@ public class Console implements AutoCloseable {
     char answer = readNextChar();
     boolean withIntermediateTime = answer == translator.say("answer.yes").charAt(0);
     append(answer);
+    appendNewLine();
+    append(translator.say("actual.exercices.count"));
+    append(" ");
+    append(controller.getActualExercices());
     print();
 
     while (controller.hasNext()) {

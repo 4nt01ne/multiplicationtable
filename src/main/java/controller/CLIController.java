@@ -31,4 +31,8 @@ public class CLIController implements Iterator<Exercise> {
   public int getMaxExercices() {
     return Exercises.getMaxExercices();
   }
+  
+  public int getActualExercices() {
+    return exercises.getCount();
+  }
 }
