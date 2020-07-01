@@ -1,0 +1,13 @@
+server:
+  port: 8080
+camel:
+  springboot:
+    name: ServicesRest
+management:
+  port: 8081
+endpoints:
+  enabled: false
+  health:
+    enabled: true
+web:
+  path: /*
