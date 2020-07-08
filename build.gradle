@@ -7,7 +7,7 @@ plugins {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'controller.Console'
+        attributes 'Main-Class': 'console.ConsoleExercices'
     }
 }
 
@@ -30,5 +30,10 @@ dependencies {
 	compile group: 'org.apache.camel', name: 'camel-servlet', version: '3.4.0'
 	compile group: 'org.apache.camel', name: 'camel-jackson', version: '3.4.0'
 	compile group: 'org.apache.camel', name: 'camel-swagger-java', version: '3.4.0'
+	testCompile group: 'org.apache.camel', name: 'camel-test', version: '3.4.0'
 	compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'
+}
+
+test {
+    useJUnit()
 }

@@ -1,13 +1,16 @@
-package model;
+package be.model;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PrimitiveIterator;
 import java.util.Random;
 
+//FIXME make this class state less
 public class Exercises implements Iterator<Exercise> {
   private static final int min = 2;
   private static final int max = 10;
@@ -22,6 +25,7 @@ public class Exercises implements Iterator<Exercise> {
   private Instant start;
   private Exercise current;
   private List<String> performed = new ArrayList<String>(maxCombinations);
+  private Map<String, Exercise> exercises = new HashMap<>(maxCombinations);
 
   public static int getMaxExercices() {
     return maxCombinations;
@@ -40,14 +44,21 @@ public class Exercises implements Iterator<Exercise> {
       }
       handleResult();
       current = new Exercise(randomIterator.nextInt(), randomIterator.nextInt());
-      while (hasNext() && (performed.contains(current.anInt + "x" + current.anOtherInt)
-          || performed.contains(current.anOtherInt + "x" + current.anInt))) {
+      while (hasNext() && (performed.contains(current.firstInt + "x" + current.secondInt)
+          || performed.contains(current.secondInt + "x" + current.firstInt))) {
         current = new Exercise(randomIterator.nextInt(), randomIterator.nextInt());
       }
       return current;
     } finally {
       remaining--;
-      performed.add(current.anInt + "x" + current.anOtherInt);
+      performed.add(current.firstInt + "x" + current.secondInt);
+      exercises.put(current.getId(), current);
+    }
+  }
+  
+  public void setResult(String id, long result) {
+    if(exercises.containsKey(id)) {
+      exercises.get(id).setResult(result);
     }
   }
 

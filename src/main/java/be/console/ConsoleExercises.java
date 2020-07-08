@@ -1,23 +1,25 @@
-package controller;
+package be.console;
 
 import java.io.IOException;
 import java.util.Scanner;
-import model.Exercise;
+import be.controller.ExercicesController;
+import be.controller.Translator;
+import be.model.Exercise;
 
-public class Console implements AutoCloseable {
-  private CLIController controller = new CLIController();
+public class ConsoleExercises implements AutoCloseable {
+  private ExercicesController controller = new ExercicesController();
   private static Translator translator;
   private Scanner scanner = new Scanner(System.in);
 
   private StringBuffer screen = new StringBuffer();
 
   public static void main(String[] args) throws Exception {
-    try (Console console = new Console(args);) {
+    try (ConsoleExercises console = new ConsoleExercises(args);) {
       console.run();
     }
   }
 
-  public Console(String[] args) {
+  public ConsoleExercises(String[] args) {
     translator = new Translator(args);
   }
 

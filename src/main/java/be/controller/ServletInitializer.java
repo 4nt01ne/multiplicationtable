@@ -1,5 +1,6 @@
-package controller;
+package be.controller;
 
+import be.MainApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 

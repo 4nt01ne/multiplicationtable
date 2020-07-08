@@ -1,4 +1,4 @@
-package controller;
+package be;
 
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages =  {"controller", "web"})
+//@ComponentScan(basePackages =  {"be/controller", "be/web"})
 public class MainApplication {
 
   @Value("${web.path}")

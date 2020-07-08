@@ -1,4 +1,4 @@
-package controller;
+package be.console;
 
 /**
  * credits

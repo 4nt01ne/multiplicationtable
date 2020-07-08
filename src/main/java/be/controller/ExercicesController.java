@@ -1,11 +1,13 @@
-package controller;
+package be.controller;
 
 import java.time.Duration;
 import java.util.Iterator;
-import model.Exercise;
-import model.Exercises;
+import org.springframework.stereotype.Service;
+import be.model.Exercise;
+import be.model.Exercises;
 
-public class CLIController implements Iterator<Exercise> {
+@Service
+public class ExercicesController implements Iterator<Exercise> {
   private Exercises exercises = new Exercises();
   
   public void setWantedExercices(int wanted) {
@@ -22,6 +24,10 @@ public class CLIController implements Iterator<Exercise> {
   
   public String result() {
     return exercises.result();
+  }
+  
+  public void setResult(Exercise withResult) {
+    exercises.setResult(withResult.getId(), withResult.getResult());
   }
   
   public Duration duration() {

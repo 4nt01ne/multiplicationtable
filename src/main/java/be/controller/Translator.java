@@ -1,4 +1,4 @@
-package controller;
+package be.controller;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
