@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.Scanner;
 import be.controller.ExercicesController;
 import be.controller.Translator;
+import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
+import be.model.Exercises;
 
 public class ConsoleExercises implements AutoCloseable {
   private ExercicesController controller = new ExercicesController();
@@ -23,7 +25,8 @@ public class ConsoleExercises implements AutoCloseable {
     translator = new Translator(args);
   }
 
-  private void run() {
+  private void run() throws NotFoundExercisesException {
+    Exercises exercise = controller.createExercise();
     append(translator.say("how.much.exercises") + " (max:" + controller.getMaxExercices() + ") ");
     printNoCarriageReturn();
 
@@ -32,7 +35,7 @@ public class ConsoleExercises implements AutoCloseable {
     appendNewLine();
     print();
 
-    controller.setWantedExercices(wantedExercises);
+    controller.setWantedExercices(exercise.getId(), wantedExercises);
 
     append(translator.say("with.intermediate.time"));
     append(" ");
@@ -43,11 +46,11 @@ public class ConsoleExercises implements AutoCloseable {
     appendNewLine();
     append(translator.say("actual.exercices.count"));
     append(" ");
-    append(controller.getActualExercices());
+    append(controller.getActualExercices(exercise.getId()));
     print();
 
-    while (controller.hasNext()) {
-      Exercise currentExercise = controller.next();
+    while (controller.hasNext(exercise.getId())) {
+      Exercise currentExercise = controller.next(exercise.getId());
       appendNewLine();
       append(currentExercise);
       printNoCarriageReturn();
@@ -77,11 +80,11 @@ public class ConsoleExercises implements AutoCloseable {
     appendNewLine();
     append(translator.say("total"));
     append(": ");
-    append(controller.result());
+    append(controller.result(exercise.getId()));
     append(" ");
     append(translator.say("in.seconds.in"));
     append(" ");
-    append(controller.duration().getSeconds());
+    append(controller.duration(exercise.getId()).getSeconds());
     append(" ");
     append(translator.say("in.seconds.seconds"));
     print();

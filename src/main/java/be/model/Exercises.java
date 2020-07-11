@@ -2,18 +2,15 @@ package be.model;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PrimitiveIterator;
-import java.util.Random;
+import java.util.*;
 
 //FIXME make this class state less
 public class Exercises implements Iterator<Exercise> {
   private static final int min = 2;
   private static final int max = 10;
+
+  private String id = UUID.randomUUID().toString();
+
   //cast to float to keep comma precision
   //credits: https://math.stackexchange.com/a/3403598
   private static final int maxCombinations =(int)(((float)max - min + 1) * (max - min + 1 + 1))/2;
@@ -22,6 +19,7 @@ public class Exercises implements Iterator<Exercise> {
   private int count;
   private int remaining;
   private int result;
+  private Instant instantiationDate = Instant.now();
   private Instant start;
   private Exercise current;
   private List<String> performed = new ArrayList<String>(maxCombinations);
@@ -86,5 +84,9 @@ public class Exercises implements Iterator<Exercise> {
   
   public int getCount() {
     return count;
+  }
+
+  public String getId() {
+    return id;
   }
 }
