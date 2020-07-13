@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class ExercicesController {
+public class ExercisesController {
 
   private final Map<String, Exercises> playingExercises = new HashMap<>();
 
@@ -20,7 +20,7 @@ public class ExercicesController {
     return exercises;
   }
 
-  public void setWantedExercices(String exercisesId, int wanted) throws NotFoundExercisesException {
+  public void setWantedExercises(String exercisesId, int wanted) throws NotFoundExercisesException {
     Exercises exercises = getExercises(exercisesId);
     exercises.setCount(wanted);
   }
@@ -51,7 +51,7 @@ public class ExercicesController {
   }
 
   public int getMaxExercices() {
-    return Exercises.getMaxExercices();
+    return Exercises.getMaxExercises();
   }
 
   public int getActualExercices(String exercisesId) throws NotFoundExercisesException {

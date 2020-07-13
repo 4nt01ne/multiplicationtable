@@ -25,7 +25,7 @@ public class Exercises implements Iterator<Exercise> {
   private List<String> performed = new ArrayList<String>(maxCombinations);
   private Map<String, Exercise> exercises = new HashMap<>(maxCombinations);
 
-  public static int getMaxExercices() {
+  public static int getMaxExercises() {
     return maxCombinations;
   }
 

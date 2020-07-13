@@ -2,14 +2,14 @@ package be.console;
 
 import java.io.IOException;
 import java.util.Scanner;
-import be.controller.ExercicesController;
+import be.controller.ExercisesController;
 import be.controller.Translator;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
 import be.model.Exercises;
 
 public class ConsoleExercises implements AutoCloseable {
-  private ExercicesController controller = new ExercicesController();
+  private ExercisesController controller = new ExercisesController();
   private static Translator translator;
   private Scanner scanner = new Scanner(System.in);
 
@@ -35,7 +35,7 @@ public class ConsoleExercises implements AutoCloseable {
     appendNewLine();
     print();
 
-    controller.setWantedExercices(exercise.getId(), wantedExercises);
+    controller.setWantedExercises(exercise.getId(), wantedExercises);
 
     append(translator.say("with.intermediate.time"));
     append(" ");

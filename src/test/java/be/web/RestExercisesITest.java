@@ -2,8 +2,6 @@ package be.web;
 
 import be.model.Exercise;
 import be.model.Exercises;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,35 +12,69 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RestExercisesITest {
-  @Autowired
-  private TestRestTemplate restTemplate;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
-  @Test
-  public void setWantedExercisesTest() throws JsonProcessingException {
-    Exercises exercises = newExercises(2);
-    ResponseEntity<String> response = restTemplate.postForEntity("/wantedExercises/" + exercises.getId() + "?wanted=2",null, String.class);
-    Assert.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-  }
+    @Test
+    public void setWantedExercisesTest() {
+        Exercises exercises = newExercises();
+        HttpStatus statusCode = setWantedExercises(exercises.getId(), 2);
+        assertEquals(HttpStatus.NO_CONTENT, statusCode);
+    }
 
-  @Test
-  public void setResultTest() throws JsonProcessingException {
-    Exercises exercises = newExercises(1);
-    Exercise result = nextExercise(exercises.getId());
-    result.setResult(result.getFirstInt() * result.getSecondInt());
-    ResponseEntity<String> response = restTemplate.postForEntity("/result/" + exercises.getId(),result, String.class);
-    Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
+    @Test
+    public void hasNextResultTest() {
+        Exercises exercises = newExercises();
+        setWantedExercises(exercises.getId(), 2);
+        Exercise result = nextExercise(exercises.getId());
+        assertNotNull(result);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/hasNext/" + exercises.getId(), Map.class);
+        Map body = response.getBody();
+        assertTrue(body.containsKey("hasNext"));
+        assertTrue(Boolean.valueOf(body.get("hasNext").toString()));
 
-  private Exercises newExercises(int wanted) throws JsonProcessingException {
-    ResponseEntity<Exercises> response = restTemplate.getForEntity("/exercises?wanted=" + wanted, Exercises.class);
-    return response.getBody();
-  }
+        result = nextExercise(exercises.getId());
+        assertNotNull(result);
+        response = restTemplate.getForEntity("/hasNext/" + exercises.getId(), Map.class);
+        body = response.getBody();
+        assertTrue(body.containsKey("hasNext"));
+        assertFalse(Boolean.valueOf(body.get("hasNext").toString()));
+    }
 
-  private Exercise nextExercise(String exercisesId) throws JsonProcessingException {
-    ResponseEntity<Exercise> response = restTemplate.getForEntity("/next/"  + exercisesId,Exercise.class);
-    return response.getBody();
-  }
+    @Test
+    public void setResultTest() {
+        Exercises exercises = newExercises();
+        setWantedExercises(exercises.getId(), 1);
+        Exercise result = nextExercise(exercises.getId());
+        result.setResult(result.getFirstInt() * result.getSecondInt());
+        ResponseEntity<String> response = restTemplate.postForEntity("/result/" + exercises.getId(), result, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void cannotSetUnknownResultTest() {
+        Exercise fakeResult = new Exercise();
+        ResponseEntity<String> response = restTemplate.postForEntity("/result/" + fakeResult.getId(), fakeResult, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    private Exercises newExercises() {
+        ResponseEntity<Exercises> response = restTemplate.getForEntity("/exercises", Exercises.class);
+        return response.getBody();
+    }
+    private HttpStatus setWantedExercises(String exercisesId, int wanted) {
+        return restTemplate.postForEntity("/wantedExercises/" + exercisesId + "?wanted=" + wanted, null, null).getStatusCode();
+    }
+
+    private Exercise nextExercise(String exercisesId) {
+        ResponseEntity<Exercise> response = restTemplate.getForEntity("/next/" + exercisesId, Exercise.class);
+        return response.getBody();
+    }
 }

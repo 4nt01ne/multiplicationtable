@@ -1,6 +1,6 @@
 package be.web;
 
-import be.controller.ExercicesController;
+import be.controller.ExercisesController;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
 import org.apache.camel.Exchange;
@@ -19,7 +19,7 @@ import java.util.Map;
 //FIXME add a watch dog to clean old exercises
 public class RestExercises extends RouteBuilder {
   @Autowired
-  private ExercicesController exercicesController;
+  private ExercisesController exercisesController;
 
   @Value("${server.port}")
   String serverPort;
@@ -69,7 +69,7 @@ public class RestExercises extends RouteBuilder {
   public String exercises(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .process(exchange -> exchange.getIn().setBody(exercicesController.createExercise()))
+      .process(exchange -> exchange.getIn().setBody(exercisesController.createExercise()))
       .marshal().json(JsonLibrary.Jackson);
     return endpointUri;
   }
@@ -77,20 +77,19 @@ public class RestExercises extends RouteBuilder {
   public String setWantedExercises(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .process(exchange -> exercicesController.setWantedExercices(extractId(exchange), exchange.getIn().getHeader("wanted", Integer.class)));
+      .process(exchange -> exercisesController.setWantedExercises(extractId(exchange), exchange.getIn().getHeader("wanted", Integer.class)));
     return endpointUri;
   }
 
   public String hasNext(String endpointName) {
-
     Map<String, Boolean> result = new HashMap<>(1);
-
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
       .process(exchange -> {
-        result.put("hasNext", exercicesController.hasNext(extractId(exchange)));
+        result.put("hasNext", exercisesController.hasNext(extractId(exchange)));
         exchange.getIn().setBody(result);
-      });
+      })
+      .marshal().json(JsonLibrary.Jackson);
     return endpointUri;
   }
 
@@ -99,7 +98,7 @@ public class RestExercises extends RouteBuilder {
     from(endpointUri)
       .setBody(exchange -> {
         try {
-          return exercicesController.next(extractId(exchange));
+          return exercisesController.next(extractId(exchange));
         } catch (NotFoundExercisesException e) {
           exchange.setException(e);
           return null;
@@ -113,14 +112,14 @@ public class RestExercises extends RouteBuilder {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
       .unmarshal().json(JsonLibrary.Jackson, Exercise.class)
-      .process(exchange -> exercicesController.setResult(extractId(exchange), exchange.getIn().getBody(Exercise.class)));
+      .process(exchange -> exercisesController.setResult(extractId(exchange), exchange.getIn().getBody(Exercise.class)));
     return endpointUri;
   }
 
   public String result(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .process(exchange -> exchange.getIn().setBody(exercicesController.result(extractId(exchange))));
+      .process(exchange -> exchange.getIn().setBody(exercisesController.result(extractId(exchange))));
     return endpointUri;
   }
 
