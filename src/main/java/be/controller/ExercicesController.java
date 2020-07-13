@@ -19,6 +19,7 @@ public class ExercicesController {
     playingExercises.put(exercises.getId(), exercises);
     return exercises;
   }
+
   public void setWantedExercices(String exercisesId, int wanted) throws NotFoundExercisesException {
     Exercises exercises = getExercises(exercisesId);
     exercises.setCount(wanted);
