@@ -1,7 +1,7 @@
 package be.web;
 
 import be.model.Exercise;
-import be.model.Exercises;
+import be.controller.MultiplicationExercisesController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +24,14 @@ public class RestExercisesITest {
 
     @Test
     public void setWantedExercisesTest() {
-        Exercises exercises = newExercises();
+        MultiplicationExercisesController exercises = newExercises();
         HttpStatus statusCode = setWantedExercises(exercises.getId(), 2);
         assertEquals(HttpStatus.NO_CONTENT, statusCode);
     }
 
     @Test
     public void hasNextResultTest() {
-        Exercises exercises = newExercises();
+        MultiplicationExercisesController exercises = newExercises();
         setWantedExercises(exercises.getId(), 2);
         Exercise result = nextExercise(exercises.getId());
         assertNotNull(result);
@@ -50,7 +50,7 @@ public class RestExercisesITest {
 
     @Test
     public void setResultTest() {
-        Exercises exercises = newExercises();
+        MultiplicationExercisesController exercises = newExercises();
         setWantedExercises(exercises.getId(), 1);
         Exercise result = nextExercise(exercises.getId());
         result.setResult(result.getFirstInt() * result.getSecondInt());
@@ -65,8 +65,8 @@ public class RestExercisesITest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    private Exercises newExercises() {
-        ResponseEntity<Exercises> response = restTemplate.getForEntity("/exercises", Exercises.class);
+    private MultiplicationExercisesController newExercises() {
+        ResponseEntity<MultiplicationExercisesController> response = restTemplate.getForEntity("/exercises", MultiplicationExercisesController.class);
         return response.getBody();
     }
     private HttpStatus setWantedExercises(String exercisesId, int wanted) {

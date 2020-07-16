@@ -1,8 +1,10 @@
 package be.web;
 
 import be.controller.ExercisesController;
+import be.controller.MultiplicationExercisesController;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
+import be.model.MultiplicationExercise;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -62,14 +64,14 @@ public class RestExercises extends RouteBuilder {
         .post("result/{id}")
           .to(setResult("setResult"))
         .get("result/{id}")
-          .to(result("getResult"));
+          .to(getResult("getResult"));
 
   }
 
   public String exercises(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .process(exchange -> exchange.getIn().setBody(exercisesController.createExercise()))
+      .process(exchange -> exchange.getIn().setBody(exercisesController.createExercise(MultiplicationExercisesController.class)))
       .marshal().json(JsonLibrary.Jackson);
     return endpointUri;
   }
@@ -111,12 +113,12 @@ public class RestExercises extends RouteBuilder {
   public String setResult(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .unmarshal().json(JsonLibrary.Jackson, Exercise.class)
+      .unmarshal().json(JsonLibrary.Jackson, MultiplicationExercise.class)
       .process(exchange -> exercisesController.setResult(extractId(exchange), exchange.getIn().getBody(Exercise.class)));
     return endpointUri;
   }
 
-  public String result(String endpointName) {
+  public String getResult(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
       .process(exchange -> exchange.getIn().setBody(exercisesController.result(extractId(exchange))));

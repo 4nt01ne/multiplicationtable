@@ -1,12 +1,15 @@
 package be.console;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
+
+import be.controller.ExercisesControllerInterface;
+import be.controller.MultiplicationExercisesController;
 import be.controller.ExercisesController;
 import be.controller.Translator;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
-import be.model.Exercises;
 
 public class ConsoleExercises implements AutoCloseable {
   private ExercisesController controller = new ExercisesController();
@@ -25,9 +28,9 @@ public class ConsoleExercises implements AutoCloseable {
     translator = new Translator(args);
   }
 
-  private void run() throws NotFoundExercisesException {
-    Exercises exercise = controller.createExercise();
-    append(translator.say("how.much.exercises") + " (max:" + controller.getMaxExercices() + ") ");
+  private void run() throws NotFoundExercisesException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    ExercisesControllerInterface exercise = controller.createExercise(MultiplicationExercisesController.class);
+    append(translator.say("how.much.exercises") + " (max:" + controller.getMaxExercises(MultiplicationExercisesController.class) + ") ");
     printNoCarriageReturn();
 
     int wantedExercises = readNextInt();
@@ -46,7 +49,7 @@ public class ConsoleExercises implements AutoCloseable {
     appendNewLine();
     append(translator.say("actual.exercices.count"));
     append(" ");
-    append(controller.getActualExercices(exercise.getId()));
+    append(controller.getActualExercises(exercise.getId()));
     print();
 
     while (controller.hasNext(exercise.getId())) {
@@ -54,7 +57,7 @@ public class ConsoleExercises implements AutoCloseable {
       appendNewLine();
       append(currentExercise);
       printNoCarriageReturn();
-      currentExercise.setResult(readNextLong());
+      currentExercise.setResult(String.valueOf(readNextLong()));
       append(currentExercise.getResult());
       print();
       append(" ");

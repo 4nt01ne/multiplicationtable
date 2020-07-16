@@ -1,11 +1,14 @@
-package be.model;
+package be.controller;
+
+import be.model.Exercise;
+import be.model.MultiplicationExercise;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 //FIXME make this class state less
-public class Exercises implements Iterator<Exercise> {
+public class MultiplicationExercisesController implements ExercisesControllerInterface {
   private static final int min = 2;
   private static final int max = 10;
 
@@ -21,11 +24,11 @@ public class Exercises implements Iterator<Exercise> {
   private int result;
   private Instant instantiationDate = Instant.now();
   private Instant start;
-  private Exercise current;
+  private MultiplicationExercise current;
   private List<String> performed = new ArrayList<String>(maxCombinations);
   private Map<String, Exercise> exercises = new HashMap<>(maxCombinations);
 
-  public static int getMaxExercises() {
+  public int getMaxExercises() {
     return maxCombinations;
   }
 
@@ -41,22 +44,22 @@ public class Exercises implements Iterator<Exercise> {
         start = Instant.now();
       }
       handleResult();
-      current = new Exercise(randomIterator.nextInt(), randomIterator.nextInt());
-      while (hasNext() && (performed.contains(current.firstInt + "x" + current.secondInt)
-          || performed.contains(current.secondInt + "x" + current.firstInt))) {
-        current = new Exercise(randomIterator.nextInt(), randomIterator.nextInt());
+      current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
+      while (hasNext() && (performed.contains(current.getFirstInt() + "x" + current.getSecondInt())
+          || performed.contains(current.getSecondInt() + "x" + current.getFirstInt()))) {
+        current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
       }
       return current;
     } finally {
       remaining--;
-      performed.add(current.firstInt + "x" + current.secondInt);
+      performed.add(current.getFirstInt() + "x" + current.getSecondInt());
       exercises.put(current.getId(), current);
     }
   }
   
-  public void setResult(String id, long result) {
+  public void setResult(String id, String result) {
     if(exercises.containsKey(id)) {
-      exercises.get(id).setResult(result);
+      exercises.get(id).setResult(String.valueOf(result));
     }
   }
 
