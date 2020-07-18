@@ -2,6 +2,7 @@ package be.web;
 
 import be.model.Exercise;
 import be.controller.MultiplicationExercisesController;
+import be.model.MultiplicationExercise;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class RestExercisesITest {
+public class RestMultiplicationExercisesITest {
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -52,15 +53,15 @@ public class RestExercisesITest {
     public void setResultTest() {
         MultiplicationExercisesController exercises = newExercises();
         setWantedExercises(exercises.getId(), 1);
-        Exercise result = nextExercise(exercises.getId());
-        result.setResult(result.getFirstInt() * result.getSecondInt());
+        MultiplicationExercise result = nextExercise(exercises.getId());
+        result.setResult(String.valueOf(result.getFirstInt() * result.getSecondInt()));
         ResponseEntity<String> response = restTemplate.postForEntity("/result/" + exercises.getId(), result, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void cannotSetUnknownResultTest() {
-        Exercise fakeResult = new Exercise();
+        MultiplicationExercise fakeResult = new MultiplicationExercise();
         ResponseEntity<String> response = restTemplate.postForEntity("/result/" + fakeResult.getId(), fakeResult, String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -73,8 +74,8 @@ public class RestExercisesITest {
         return restTemplate.postForEntity("/wantedExercises/" + exercisesId + "?wanted=" + wanted, null, null).getStatusCode();
     }
 
-    private Exercise nextExercise(String exercisesId) {
-        ResponseEntity<Exercise> response = restTemplate.getForEntity("/next/" + exercisesId, Exercise.class);
+    private MultiplicationExercise nextExercise(String exercisesId) {
+        ResponseEntity<MultiplicationExercise> response = restTemplate.getForEntity("/next/" + exercisesId, MultiplicationExercise.class);
         return response.getBody();
     }
 }
