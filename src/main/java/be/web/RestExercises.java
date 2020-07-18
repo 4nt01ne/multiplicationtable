@@ -1,13 +1,14 @@
 package be.web;
 
 import be.controller.ExercisesController;
+import be.controller.ExercisesControllerInterface;
 import be.controller.MultiplicationExercisesController;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
 import be.model.MultiplicationExercise;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -53,51 +54,68 @@ public class RestExercises extends RouteBuilder {
     rest().description("Exercices REST Service")
         .produces(MediaType.APPLICATION_JSON_VALUE)
         .consumes(MediaType.APPLICATION_JSON_VALUE)
+        .bindingMode(RestBindingMode.json)
         .get("exercises")
+          .type(ExercisesControllerInterface.class)
+          .id("rest-exercises")
           .to(exercises("exercises"))
         .post("wantedExercises/{id}")
-          .to(setWantedExercises("wanted-exercises"))
+          .id("rest-wantedExercises")
+          .to(setWantedExercises("wantedExercises"))
         .get("hasNext/{id}")
-          .to(hasNext("has-next"))
+          .type(Map.class)
+          .id("rest-hasNext")
+          .to(hasNext("hasNext"))
         .get("next/{id}")
+          .type(Exercise.class)
+          .id("rest-next")
           .to(next("next"))
         .post("result/{id}")
+          .type(MultiplicationExercise.class)
+          .id("rest-setResult")
           .to(setResult("setResult"))
         .get("result/{id}")
-          .to(getResult("getResult"));
-
+          .type(String.class)
+          .id("rest-getResult")
+          .to(getResult("getResult"))
+        .get("duration/{id}")
+          .type(Map.class)
+          .id("rest-getDuration")
+          .to(duration("getDuration"));
   }
 
   public String exercises(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .process(exchange -> exchange.getIn().setBody(exercisesController.createExercise(MultiplicationExercisesController.class)))
-      .marshal().json(JsonLibrary.Jackson);
+      .routeId(endpointName)
+      .process(exchange -> exchange.getIn().setBody(exercisesController.createExercise(MultiplicationExercisesController.class)));
     return endpointUri;
   }
 
   public String setWantedExercises(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
+      .routeId(endpointName)
       .process(exchange -> exercisesController.setWantedExercises(extractId(exchange), exchange.getIn().getHeader("wanted", Integer.class)));
     return endpointUri;
   }
 
   public String hasNext(String endpointName) {
-    Map<String, Boolean> result = new HashMap<>(1);
     String endpointUri = "direct:" + endpointName;
+    Map<String, Boolean> result = new HashMap<>(1);
     from(endpointUri)
+      .routeId(endpointName)
       .process(exchange -> {
         result.put("hasNext", exercisesController.hasNext(extractId(exchange)));
         exchange.getIn().setBody(result);
-      })
-      .marshal().json(JsonLibrary.Jackson);
+      });
     return endpointUri;
   }
 
   public String next(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
+      .routeId(endpointName)
       .setBody(exchange -> {
         try {
           return exercisesController.next(extractId(exchange));
@@ -105,15 +123,14 @@ public class RestExercises extends RouteBuilder {
           exchange.setException(e);
           return null;
         }
-      })
-      .marshal().json(JsonLibrary.Jackson);
+      });
     return endpointUri;
   }
 
   public String setResult(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
-      .unmarshal().json(JsonLibrary.Jackson, MultiplicationExercise.class)
+      .routeId(endpointName)
       .process(exchange -> exercisesController.setResult(extractId(exchange), exchange.getIn().getBody(Exercise.class)));
     return endpointUri;
   }
@@ -121,18 +138,23 @@ public class RestExercises extends RouteBuilder {
   public String getResult(String endpointName) {
     String endpointUri = "direct:" + endpointName;
     from(endpointUri)
+      .routeId(endpointName)
       .process(exchange -> exchange.getIn().setBody(exercisesController.result(extractId(exchange))));
     return endpointUri;
   }
 
+  public String duration(String endpointName) {
+    String endpointUri = "direct:" + endpointName;
+    Map<String, Long> result = new HashMap<>(1);
+    from(endpointUri)
+      .routeId(endpointName)
+      .process(exchange -> {
+        result.put("durationSeconds", exercisesController.duration(extractId(exchange)).getSeconds());
+        exchange.getIn().setBody(result);
+      });
+    return endpointUri;
+  }
 
-//  public String duration(String endpointName) {
-//    String endpointUri = "direct:" + endpointName;
-//from(endpointUri)
-//.process(exchange -> controller.setWantedExercices(exchange.getIn().getHeader("wanted", Integer.class)));
-//    return exercises.duration();
-//  }
-//
 //  public String getMaxExercices(String endpointName) {
 //    String endpointUri = "direct:" + endpointName;
 //from(endpointUri)
