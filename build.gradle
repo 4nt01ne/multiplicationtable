@@ -26,12 +26,12 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	compile group: 'org.apache.camel', name: 'camel-core', version: '3.4.0'
-	compile group: 'org.apache.camel', name: 'camel-servlet', version: '3.4.0'
-	compile group: 'org.apache.camel', name: 'camel-jackson', version: '3.4.0'
-	compile group: 'org.apache.camel', name: 'camel-swagger-java', version: '3.4.0'
+	implementation 'org.apache.camel:camel-core:3.4.0'
+	implementation 'org.apache.camel:camel-servlet:3.4.0'
+	implementation 'org.apache.camel:camel-jackson:3.4.0'
+	implementation 'org.apache.camel:camel-swagger-java:3.4.0'
 	testCompile group: 'org.apache.camel', name: 'camel-test', version: '3.4.0'
-	compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'
+	implementation 'javax.ws.rs:javax.ws.rs-api:2.0'
 }
 
 test {
