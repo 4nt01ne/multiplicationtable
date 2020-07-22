@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'be.console.ConsoleExercises'
+    }
+    archivesBaseName = 'console-exercises'
+}
+
+group = 'be.challenge'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    jcenter()
+}
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.apache.camel.springboot:camel-spring-boot-starter:3.4.0'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    implementation 'org.apache.camel:camel-core:3.4.0'
+    implementation 'org.apache.camel:camel-servlet:3.4.0'
+    implementation 'org.apache.camel:camel-jackson:3.4.0'
+    implementation 'org.apache.camel:camel-swagger-java:3.4.0'
+    testCompile group: 'org.apache.camel', name: 'camel-test', version: '3.4.0'
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.0'
+}
+
+test {
+    useJUnit()
+}
