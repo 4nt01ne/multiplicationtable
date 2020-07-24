@@ -32,6 +32,10 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
     return maxCombinations;
   }
 
+  public static int maxCombinations() {
+    return maxCombinations;
+  }
+
   @Override
   public boolean hasNext() {
     return remaining > 0 && performed.size() < maxCombinations;
@@ -44,16 +48,21 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
         start = Instant.now();
       }
       handleResult();
-      current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
-      while (hasNext() && (performed.contains(current.getFirstInt() + "x" + current.getSecondInt())
-          || performed.contains(current.getSecondInt() + "x" + current.getFirstInt()))) {
+      if(hasNext()) {
         current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
+        while (hasNext() && (performed.contains(current.getFirstInt() + "x" + current.getSecondInt())
+                || performed.contains(current.getSecondInt() + "x" + current.getFirstInt()))) {
+          current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
+        }
+        return current;
       }
-      return current;
+      return null;
     } finally {
       remaining--;
-      performed.add(current.getFirstInt() + "x" + current.getSecondInt());
-      exercises.put(current.getId(), current);
+      if(current != null) {
+        performed.add(current.getFirstInt() + "x" + current.getSecondInt());
+        exercises.put(current.getId(), current);
+      }
     }
   }
   
