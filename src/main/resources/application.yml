@@ -10,4 +10,5 @@ endpoints:
   health:
     enabled: true
 web:
-  path: /*
+  camel:
+    urlMapping: /api/*

@@ -28,7 +28,7 @@ public class RestMultiplicationExercises extends RouteBuilder {
   @Value("${server.port}")
   String serverPort;
 
-  @Value("${web.path}")
+  @Value("${web.camel.urlMapping}")
   String contextPath;
 
   @Override

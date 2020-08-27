@@ -28,7 +28,7 @@ public class RestMultiplicationExercisesITest {
         MultiplicationExercisesController exercises = newExercises();
         HttpStatus statusCode = setWantedExercises(exercises.getId(), 2);
         assertEquals(HttpStatus.NO_CONTENT, statusCode);
-        ResponseEntity<Map> response = restTemplate.getForEntity("/requestedExercises/" + exercises.getId(), Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/api/requestedExercises/" + exercises.getId(), Map.class);
         Map body = response.getBody();
         assertTrue(body.containsKey("requestedExercises"));
         assertEquals(2, body.get("requestedExercises"));
@@ -41,7 +41,7 @@ public class RestMultiplicationExercisesITest {
         MultiplicationExercise exercise = nextExercise(exercises.getId());
         assertNotNull(exercise);
 
-        ResponseEntity<Map> mapResponse = restTemplate.getForEntity("/hasNext/" + exercises.getId(), Map.class);
+        ResponseEntity<Map> mapResponse = restTemplate.getForEntity("/api/hasNext/" + exercises.getId(), Map.class);
         Map body = mapResponse.getBody();
         assertTrue(body.containsKey("hasNext"));
         assertTrue(Boolean.valueOf(body.get("hasNext").toString()));
@@ -52,7 +52,7 @@ public class RestMultiplicationExercisesITest {
         assertNotNull(exercise.duration());
         assertFalse(exercise.isCorrect());
 
-        mapResponse = restTemplate.getForEntity("/hasNext/" + exercises.getId(), Map.class);
+        mapResponse = restTemplate.getForEntity("/api/hasNext/" + exercises.getId(), Map.class);
         body = mapResponse.getBody();
         assertTrue(body.containsKey("hasNext"));
         assertFalse(Boolean.valueOf(body.get("hasNext").toString()));
@@ -66,27 +66,27 @@ public class RestMultiplicationExercisesITest {
         setWantedExercises(exercises.getId(), 1);
         MultiplicationExercise result = nextExercise(exercises.getId());
         result.setResult(String.valueOf(result.getFirstInt() * result.getSecondInt()));
-        ResponseEntity<String> response = restTemplate.postForEntity("/result/" + exercises.getId(), result, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/result/" + exercises.getId(), result, String.class);
         assertEquals("expected HTTP 200 OK response code", HttpStatus.OK, response.getStatusCode());
 
-        response = restTemplate.getForEntity("/result/" + exercises.getId(), String.class);
+        response = restTemplate.getForEntity("/api/result/" + exercises.getId(), String.class);
         assertTrue("expected successful result", response.getBody().contains("1/1"));
 
         exercises = newExercises();
         setWantedExercises(exercises.getId(), 1);
         result = nextExercise(exercises.getId());
         result.setResult(String.valueOf(-1));
-        response = restTemplate.postForEntity("/result/" + exercises.getId(), result, String.class);
+        response = restTemplate.postForEntity("/api/result/" + exercises.getId(), result, String.class);
         assertEquals("expected HTTP 200 OK response code", HttpStatus.OK, response.getStatusCode());
 
-        response = restTemplate.getForEntity("/result/" + exercises.getId(), String.class);
+        response = restTemplate.getForEntity("/api/result/" + exercises.getId(), String.class);
         assertTrue("expected failure result", response.getBody().contains("0/1"));
     }
 
     @Test
     public void cannotSetUnknownResultTest() {
         MultiplicationExercise fakeResult = new MultiplicationExercise();
-        ResponseEntity<String> response = restTemplate.postForEntity("/result/" + fakeResult.getId(), fakeResult, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/result/" + fakeResult.getId(), fakeResult, String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -99,7 +99,7 @@ public class RestMultiplicationExercisesITest {
 
         Thread.sleep(1000);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/duration/" + exercises.getId(), Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/api/duration/" + exercises.getId(), Map.class);
         Map body = response.getBody();
         assertTrue(body.containsKey("durationSeconds"));
         Object durationSeconds = body.get("durationSeconds");
@@ -112,7 +112,7 @@ public class RestMultiplicationExercisesITest {
         HttpStatus statusCode = setWantedExercises(exercises.getId(), 1);
         assertEquals(HttpStatus.NO_CONTENT, statusCode);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/maxExercises/" + exercises.getId(), Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/api/maxExercises/" + exercises.getId(), Map.class);
         Map body = response.getBody();
         assertTrue(body.containsKey("maxExercises"));
         Object maxExercises = body.get("maxExercises");
@@ -120,15 +120,15 @@ public class RestMultiplicationExercisesITest {
     }
 
     private MultiplicationExercisesController newExercises() {
-        ResponseEntity<MultiplicationExercisesController> response = restTemplate.getForEntity("/exercises", MultiplicationExercisesController.class);
+        ResponseEntity<MultiplicationExercisesController> response = restTemplate.getForEntity("/api/exercises", MultiplicationExercisesController.class);
         return response.getBody();
     }
     private HttpStatus setWantedExercises(String exercisesId, int wanted) {
-        return restTemplate.postForEntity("/wantedExercises/" + exercisesId + "?wanted=" + wanted, null, null).getStatusCode();
+        return restTemplate.postForEntity("/api/wantedExercises/" + exercisesId + "?wanted=" + wanted, null, null).getStatusCode();
     }
 
     private MultiplicationExercise nextExercise(String exercisesId) {
-        ResponseEntity<MultiplicationExercise> response = restTemplate.getForEntity("/next/" + exercisesId, MultiplicationExercise.class);
+        ResponseEntity<MultiplicationExercise> response = restTemplate.getForEntity("/api/next/" + exercisesId, MultiplicationExercise.class);
         return response.getBody();
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 //@ComponentScan(basePackages =  {"be/controller", "be/web"})
 public class MainApplication {
 
-  @Value("${web.path}")
+  @Value("${web.camel.urlMapping}")
   String contextPath;
   
   public static void main(String[] args) {
