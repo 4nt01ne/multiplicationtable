@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <!-- source: https://www.baeldung.com/spring-boot-vue-js -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +15,57 @@
     <title>Exercises</title>
 </head>
 <body>
+
 <div class="lead">
     <strong>Message:</strong>
     <span th:text="${message}"></span>
 </div>
+
+<div id="contents">
+    <ul>
+        <li style="list-style-type:none" v-for="exercise in exercises">
+            <exercises
+                    v-bind:exercise="exercise"
+                    v-bind:key="exercise.id">
+            </exercises>
+        </li>
+    </ul>
+</div>
+
+<!-- at end of body tag-->
+<script
+        src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js">
+</script>
+<!-- In a real-world application, you'll likely use a build process using a tool such as Webpack and Babel transpiler, instead of using in-browser Babel. -->
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js">
+</script>
+
+<script type="text/babel">
+    Vue.component('exercises', {
+        props: ['exercise'],
+        template: `<div class="exercise">
+            <div class="exercise-body">
+                <h6 class="exercise">
+                    {{ exercise.content }}
+                </h6>
+            </div>
+            </div>`
+    });
+
+    var app = new Vue({
+        el: '#contents',
+        data: {
+            exercises: [
+                { id: "1",
+                  content: "2 x 2",
+                },
+                { id: "2",
+                  content: "2 x 3",
+                }
+            ]
+        }
+    });
+</script>
 </body>
 </html>
