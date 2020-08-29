@@ -2,6 +2,8 @@ package be.console;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 import be.controller.ExercisesControllerInterface;
@@ -25,7 +27,11 @@ public class ConsoleExercises implements AutoCloseable {
   }
 
   public ConsoleExercises(String[] args) {
-    translator = new Translator(args);
+    if (args.length == 2) {
+      translator = new Translator(String.valueOf(args[0]), String.valueOf(args[1]));
+    } else {
+      translator = new Translator();
+    }
   }
 
   private void run() throws NotFoundExercisesException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

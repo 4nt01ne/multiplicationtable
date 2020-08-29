@@ -6,9 +6,12 @@ public class Translator {
   private Locale currentLocale = new Locale("nl", "BE");
   private ResourceBundle messages = ResourceBundle.getBundle("Messages", currentLocale);
 
-  public Translator(String[] args) {
-    if (args.length == 2) {
-      currentLocale = new Locale(String.valueOf(args[0]), String.valueOf(args[1]));
+  public Translator() {
+  }
+
+  public Translator(String languageIso2, String countryIso3) {
+    if(languageIso2 != null && countryIso3 != null) {
+      currentLocale = new Locale(String.valueOf(languageIso2.toLowerCase()), countryIso3.toUpperCase());
       messages = ResourceBundle.getBundle("Messages", currentLocale);
     }
   }
