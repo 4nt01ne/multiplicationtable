@@ -1,9 +1,11 @@
 package be.controller;
 
 import be.model.Exercise;
+import be.model.Preference;
 
 import java.time.Duration;
 import java.util.Iterator;
+import java.util.Map;
 
 public interface ExercisesControllerInterface extends Iterator<Exercise> {
 
@@ -20,4 +22,8 @@ public interface ExercisesControllerInterface extends Iterator<Exercise> {
   int getCount();
 
   String getId();
+
+  void setPreference(Preference preference);
+
+  Map<String, String> getAllMessages();
 }

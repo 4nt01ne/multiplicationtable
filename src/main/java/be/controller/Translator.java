@@ -1,6 +1,5 @@
 package be.controller;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Translator {
   private Locale currentLocale = new Locale("nl", "BE");
@@ -18,5 +17,19 @@ public class Translator {
 
   public String say(String property) {
     return messages.getString(property);
+  }
+
+  public Map<String, String> getAllMessages() {
+    Map<String, String> allMessages = new HashMap<>();
+    Enumeration<String> messagesKeys = messages.getKeys();
+    while (messagesKeys != null && messagesKeys.hasMoreElements()) {
+      String key = messagesKeys.nextElement();
+      allMessages.put(key, messages.getString(key));
+    }
+    return allMessages;
+  }
+
+  public Locale getCurrentLocale() {
+    return currentLocale;
   }
 }

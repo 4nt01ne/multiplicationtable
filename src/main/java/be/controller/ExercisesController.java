@@ -2,6 +2,7 @@ package be.controller;
 
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
+import be.model.Preference;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,6 +68,16 @@ public class ExercisesController {
   public int getActualExercises(String exercisesId) throws NotFoundExercisesException {
     ExercisesControllerInterface exercises = getExercises(exercisesId);
     return exercises.getCount();
+  }
+
+  public void setPreference(String exercisesId, Preference preference) throws NotFoundExercisesException {
+    ExercisesControllerInterface exercises = getExercises(exercisesId);
+    exercises.setPreference(preference);
+  }
+
+  public Map<String, String> getAllMessages(String exercisesId) throws NotFoundExercisesException {
+    ExercisesControllerInterface exercises = getExercises(exercisesId);
+    return exercises.getAllMessages();
   }
 
   private ExercisesControllerInterface getExercises(String exercisesId) throws NotFoundExercisesException {

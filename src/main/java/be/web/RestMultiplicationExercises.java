@@ -6,6 +6,7 @@ import be.controller.MultiplicationExercisesController;
 import be.exception.NotFoundExercisesException;
 import be.model.Exercise;
 import be.model.MultiplicationExercise;
+import be.model.Preference;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -89,7 +90,15 @@ public class RestMultiplicationExercises extends RouteBuilder {
         .get("requestedExercises/{id}")
           .type(Map.class)
           .id("rest-getRequestedExercises/{id}")
-          .to(getRequestedExercises("getRequestedExercises"));
+          .to(getRequestedExercises("getRequestedExercises"))
+        .post("preference/{id}")
+          .type(Preference.class)
+          .id("rest-setPreference")
+          .to(setPreference("setPreference"))
+        .get("localMessages/{id}")
+          .type(Map.class)
+          .id("rest-getLocalMessages")
+          .to(getAllMessages("getAllMessages"));
   }
 
   public String exercises(String endpointName) {
@@ -189,6 +198,24 @@ public class RestMultiplicationExercises extends RouteBuilder {
         Map<String, Integer> result = new HashMap<>(1);
         result.put("requestedExercises", exercisesController.getActualExercises(extractId(exchange)));
         exchange.getIn().setBody(result);
+      });
+    return endpointUri;
+  }
+
+  public String setPreference(String endpointName) {
+    String endpointUri = "direct:" + endpointName;
+    from(endpointUri)
+      .routeId(endpointName)
+      .process(exchange -> exercisesController.setPreference(extractId(exchange), exchange.getIn().getBody(Preference.class)));
+    return endpointUri;
+  }
+
+  public String getAllMessages(String endpointName) {
+    String endpointUri = "direct:" + endpointName;
+    from(endpointUri)
+      .routeId(endpointName)
+      .process(exchange -> {
+        exchange.getIn().setBody(exercisesController.getAllMessages(extractId(exchange)));
       });
     return endpointUri;
   }

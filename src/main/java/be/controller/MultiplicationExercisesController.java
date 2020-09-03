@@ -2,6 +2,7 @@ package be.controller;
 
 import be.model.Exercise;
 import be.model.MultiplicationExercise;
+import be.model.Preference;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,7 +17,7 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
 
   //cast to float to keep comma precision
   //credits: https://math.stackexchange.com/a/3403598
-  private static final int maxCombinations =(int)(((float)max - min + 1) * (max - min + 1 + 1))/2;
+  private static final int maxCombinations = (int) (((float) max - min + 1) * (max - min + 1 + 1)) / 2;
 
   private PrimitiveIterator.OfInt randomIterator = new Random().ints(min, max + 1).iterator();
   private int count;
@@ -27,6 +28,10 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
   private MultiplicationExercise current;
   private List<String> performed = new ArrayList<String>(maxCombinations);
   private Map<String, Exercise> exercises = new HashMap<>(maxCombinations);
+  private Translator translator = new Translator();
+
+  private Preference preference;
+  //TODO return all messages in the requested local preference
 
   public int getMaxExercises() {
     return maxCombinations;
@@ -48,7 +53,7 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
         start = Instant.now();
       }
       handleResult();
-      if(hasNext()) {
+      if (hasNext()) {
         current = new MultiplicationExercise(randomIterator.nextInt(), randomIterator.nextInt());
         while (hasNext() && (performed.contains(current.getFirstInt() + "x" + current.getSecondInt())
                 || performed.contains(current.getSecondInt() + "x" + current.getFirstInt()))) {
@@ -59,15 +64,15 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
       return null;
     } finally {
       remaining--;
-      if(current != null) {
+      if (current != null) {
         performed.add(current.getFirstInt() + "x" + current.getSecondInt());
         exercises.put(current.getId(), current);
       }
     }
   }
-  
+
   public void setResult(String id, String result) {
-    if(exercises.containsKey(id)) {
+    if (exercises.containsKey(id)) {
       exercises.get(id).setResult(String.valueOf(result));
     }
   }
@@ -93,12 +98,26 @@ public class MultiplicationExercisesController implements ExercisesControllerInt
     this.remaining = this.count;
     this.result = this.count;
   }
-  
+
   public int getCount() {
     return count;
   }
 
   public String getId() {
     return id;
+  }
+
+  @Override
+  public void setPreference(Preference preference) {
+    this.preference = preference;
+    if(translator.getCurrentLocale().getCountry().equals(preference.getCountry())
+    || !translator.getCurrentLocale().getLanguage().equals(preference.getLanguage())) {
+      translator = new Translator(preference.getLanguage(), preference.getCountry());
+    }
+  }
+
+  @Override
+  public Map<String, String> getAllMessages() {
+    return translator.getAllMessages();
   }
 }
