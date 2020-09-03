@@ -22,14 +22,26 @@
 </div>
 
 <div id="contents">
-    <ul>
-        <li style="list-style-type:none" v-for="exercise in exercises">
-            <exercises
-                    v-bind:exercise="exercise"
-                    v-bind:key="exercise.id">
-            </exercises>
-        </li>
-    </ul>
+    <section v-if="errored">
+        <p>We're sorry, we're not able to retrieve this information at the moment, please try back later</p>
+    </section>
+    <section v-else>
+        <div v-if="loading">Loading...</div>
+
+        <div v-else>
+            <p>{{this.messages['how.much.exercises']}}</p>
+            <input v-model.number="wantedExercises" type="number">
+            <p>{{wantedExercises}}</p>
+            <ul>
+                <li style="list-style-type:none" v-for="(messageValue, messageKey) in messages">
+                    <messages
+                            v-bind:message="{'key': messageKey, 'value': messageValue}"
+                            v-bind:key="messageKey">
+                    </messages>
+                </li>
+            </ul>
+        </div>
+    </section>
 </div>
 
 <!-- at end of body tag-->
@@ -40,30 +52,63 @@
 <script
         src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js">
 </script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script type="text/babel">
-    Vue.component('exercises', {
-        props: ['exercise'],
-        template: `<div class="exercise">
-            <div class="exercise-body">
-                <h6 class="exercise">
-                    {{ exercise.content }}
-                </h6>
-            </div>
-            </div>`
+    Vue.component('messages', {
+        props: ['message'],
+        template: `
+          <div class="messages">
+          <div class="message-body">
+            <h6 class="message">
+              {{ message.key + ' = ' + message.value }}
+            </h6>
+          </div>
+          </div>`
+    });
+
+    Vue.component('how-much-exercises', {
+        props: ['message'],
+        template: `
+          <div class="messages">
+          <div class="message-body">
+            <h6 class="message">
+              {{ message.key + ' = ' + message.value }}
+            </h6>
+          </div>
+          </div>`
     });
 
     var app = new Vue({
         el: '#contents',
-        data: {
-            exercises: [
-                { id: "1",
-                  content: "2 x 2",
-                },
-                { id: "2",
-                  content: "2 x 3",
-                }
-            ]
+        data: function () {
+            return {
+                exercises: null,
+                messages: null,
+                loading: true,
+                errored: false,
+                wantedExercises: 0
+            }
+        },
+        async mounted() {
+            //<!-- FIXME make it configurable -->
+            let exercisesData = await axios.get('http://localhost:8080/api/exercises')
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                });
+            this.exercises = await exercisesData.data
+            //<!-- FIXME make it configurable -->
+            let messagesData = await axios.get('http://localhost:8080/api/localMessages/' + this.exercises.id)
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                })
+            this.messages = messagesData.data
+            this.loading = false
+
+            console.log("messages: " + JSON.stringify(this.messages))
+            console.log("message how.much.exercises: " + this.messages['how.much.exercises'])
         }
     });
 </script>
